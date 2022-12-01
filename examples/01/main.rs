@@ -3,20 +3,10 @@ use std::io::prelude::*;
 use std::io::{self, BufReader};
 
 fn main() -> io::Result<()> {
-    let lines = read_input("./examples/01/sample.txt")?;
+    let lines = read_input("./examples/01/input.txt")?;
 
-    let mut lines_iter = lines.into_iter();
-    let first_batch = lines_iter.by_ref().take_while(|line| !line.is_empty());
-
-    let first_sum = first_batch
-        .into_iter()
-        .take_while(|line| !line.is_empty())
-        .map(|line| line.parse::<i32>().expect("string must a number"))
-        .sum::<i32>();
-
-    println!("{}", first_sum);
-
-    let _second_batch = lines_iter.by_ref().take_while(|line| !line.is_empty());
+    println!("day 1.1 = {:?}", solve_part1(&lines));
+    println!("day 1.2 = {:?}", solve_part2(&lines));
 
     Ok(())
 }
@@ -29,4 +19,38 @@ fn read_input(path: &str) -> io::Result<Vec<String>> {
         .map(|l| l.expect("Could not parse line"))
         .collect::<Vec<String>>();
     Ok(lines)
+}
+
+fn solve_part1(lines: &[String]) -> i32 {
+    let mut sums = Vec::<i32>::new();
+    let mut lines_iter = lines.into_iter().peekable();
+    while lines_iter.peek().is_some() {
+        let sum = lines_iter
+            .by_ref()
+            .take_while(|line| !line.is_empty())
+            .map(|line| line.parse::<i32>().expect("string must a number"))
+            .sum::<i32>();
+
+        sums.push(sum);
+    }
+
+    *sums.iter().max().unwrap()
+}
+
+fn solve_part2(lines: &[String]) -> i32 {
+    let mut sums = Vec::<i32>::new();
+    let mut lines_iter = lines.into_iter().peekable();
+    while lines_iter.peek().is_some() {
+        let sum = lines_iter
+            .by_ref()
+            .take_while(|line| !line.is_empty())
+            .map(|line| line.parse::<i32>().expect("string must a number"))
+            .sum::<i32>();
+
+        sums.push(sum);
+    }
+
+    sums.sort_by(|a, b| b.cmp(a));
+
+    sums[0] + sums[1] + sums[2]
 }
