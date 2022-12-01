@@ -22,22 +22,18 @@ fn read_input(path: &str) -> io::Result<Vec<String>> {
 }
 
 fn solve_part1(lines: &[String]) -> i32 {
-    let mut sums = Vec::<i32>::new();
-    let mut lines_iter = lines.into_iter().peekable();
-    while lines_iter.peek().is_some() {
-        let sum = lines_iter
-            .by_ref()
-            .take_while(|line| !line.is_empty())
-            .map(|line| line.parse::<i32>().expect("string must a number"))
-            .sum::<i32>();
-
-        sums.push(sum);
-    }
-
+    let sums = sum_lines(lines);
     *sums.iter().max().unwrap()
 }
 
 fn solve_part2(lines: &[String]) -> i32 {
+    let mut sums = sum_lines(lines);
+    sums.sort_by(|a, b| b.cmp(a));
+    sums[0] + sums[1] + sums[2]
+}
+
+// sums up lines, each sum separated by a blank line
+fn sum_lines(lines: &[String]) -> Vec<i32> {
     let mut sums = Vec::<i32>::new();
     let mut lines_iter = lines.into_iter().peekable();
     while lines_iter.peek().is_some() {
@@ -50,7 +46,5 @@ fn solve_part2(lines: &[String]) -> i32 {
         sums.push(sum);
     }
 
-    sums.sort_by(|a, b| b.cmp(a));
-
-    sums[0] + sums[1] + sums[2]
+    sums
 }
