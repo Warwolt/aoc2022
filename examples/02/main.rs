@@ -26,12 +26,19 @@ fn main() -> io::Result<()> {
     let lines = read_input("./examples/02/input.txt")?;
 
     println!("day 2.1 = {:?}", solve_part1(&lines));
+    println!("day 2.2 = {:?}", solve_part2(&lines));
 
     Ok(())
 }
 
 fn solve_part1(lines: &Vec<String>) -> u32 {
-    let games = parse_input(&lines).expect("couldn't parse input");
+    let games = part1_parse_input(&lines).expect("couldn't parse input");
+    let total_score = games.iter().map(|game| score_game(*game)).sum::<u32>();
+    total_score
+}
+
+fn solve_part2(lines: &Vec<String>) -> u32 {
+    let games = part2_parse_input(&lines).expect("couldn't parse input");
     let total_score = games.iter().map(|game| score_game(*game)).sum::<u32>();
     total_score
 }
@@ -46,15 +53,23 @@ fn read_input(path: &str) -> io::Result<Vec<String>> {
     Ok(lines)
 }
 
-fn parse_input(lines: &Vec<String>) -> Option<Vec<Game>> {
+fn part1_parse_input(lines: &Vec<String>) -> Option<Vec<Game>> {
     let mut games = Vec::new();
     for line in lines {
-        games.push(parse_line(line)?);
+        games.push(part1_parse_line(line)?);
     }
     Some(games)
 }
 
-fn parse_line(line: &str) -> Option<Game> {
+fn part2_parse_input(lines: &Vec<String>) -> Option<Vec<Game>> {
+    let mut games = Vec::new();
+    for line in lines {
+        games.push(part2_parse_line(line)?);
+    }
+    Some(games)
+}
+
+fn part1_parse_line(line: &str) -> Option<Game> {
     let mut char_iter = line.chars();
     let their_hand = match char_iter.next()? {
         'A' => Some(Hand::Rock),
@@ -68,6 +83,44 @@ fn parse_line(line: &str) -> Option<Game> {
         'Z' => Some(Hand::Scissor),
         _ => None,
     }?;
+
+    Some(Game {
+        their_hand,
+        our_hand,
+    })
+}
+
+fn part2_parse_line(line: &str) -> Option<Game> {
+    let mut char_iter = line.chars();
+    let their_hand = match char_iter.next()? {
+        'A' => Some(Hand::Rock),
+        'B' => Some(Hand::Paper),
+        'C' => Some(Hand::Scissor),
+        _ => None,
+    }?;
+    let game_result = match char_iter.skip(1).next()? {
+        'X' => Some(GameResult::Loss),
+        'Y' => Some(GameResult::Draw),
+        'Z' => Some(GameResult::Win),
+        _ => None,
+    }?;
+    let our_hand = match their_hand {
+        Hand::Rock => match game_result {
+            GameResult::Win => Hand::Paper,
+            GameResult::Draw => Hand::Rock,
+            GameResult::Loss => Hand::Scissor,
+        },
+        Hand::Paper => match game_result {
+            GameResult::Win => Hand::Scissor,
+            GameResult::Draw => Hand::Paper,
+            GameResult::Loss => Hand::Rock,
+        },
+        Hand::Scissor => match game_result {
+            GameResult::Win => Hand::Rock,
+            GameResult::Draw => Hand::Scissor,
+            GameResult::Loss => Hand::Paper,
+        },
+    };
 
     Some(Game {
         their_hand,
