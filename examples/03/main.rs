@@ -25,8 +25,9 @@ fn solve_part1(lines: &[String]) -> u32 {
     let mut duplicate_items = Vec::new();
 
     for line in lines {
-        let (front, back) = get_compartments(line);
-        for item in &front {
+        let len = line.len();
+        let (front, back) = (&line[0..len / 2], &line[len / 2..len]);
+        for item in front.chars() {
             if back.contains(item) {
                 duplicate_items.push(item.clone());
                 break;
@@ -58,13 +59,6 @@ fn solve_part2(lines: &[String]) -> u32 {
     let sum = badge_items.iter().map(|i| item_priority(*i)).sum::<u32>();
 
     sum
-}
-
-fn get_compartments(rucksack: &str) -> (Vec<char>, Vec<char>) {
-    let len = rucksack.len();
-    let front = rucksack[0..len / 2].chars().collect::<Vec<char>>();
-    let back = rucksack[len / 2..len].chars().collect::<Vec<char>>();
-    (front, back)
 }
 
 fn item_priority(item: char) -> u32 {
